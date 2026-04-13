@@ -25,6 +25,7 @@ const App = () => (
           <Route path="/caption" element={<CaptionGenerator />} />
           <Route path="/architecture" element={<Architecture />} />
           <Route path="/verify" element={<DocumentVerify />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
