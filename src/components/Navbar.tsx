@@ -7,6 +7,7 @@ const navItems = [
   { label: "Caption Generator", path: "/caption" },
   { label: "Architecture", path: "/architecture" },
   { label: "Document Verify", path: "/verify" },
+  { label: "Admin", path: "/admin" },
 ];
 
 const Navbar = () => {

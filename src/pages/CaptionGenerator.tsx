@@ -1,21 +1,8 @@
-import { useState
-} from "react";
+import { useState } from "react";
 import { Loader2, Sparkles, Copy, Check } from "lucide-react";
 import ImageUploader from "@/components/ImageUploader";
-
-// Simulated CNN+LSTM caption generation
-const simulateCaptions = (): Promise<string[]> =>
-  new Promise((resolve) =>
-    setTimeout(
-      () =>
-        resolve([
-          "A group of people standing near a bus on a city street.",
-          "Several pedestrians walking along a busy urban road with vehicles.",
-          "A colorful scene of daily life in a vibrant city neighborhood.",
-        ]),
-      2500
-    )
-  );
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const CaptionGenerator = () => {
   const [preview, setPreview] = useState<string | null>(null);
@@ -37,12 +24,32 @@ const CaptionGenerator = () => {
   };
 
   const generate = async () => {
-    if (!file) return;
+    if (!file || !preview) return;
     setLoading(true);
     setCaptions([]);
-    const results = await simulateCaptions();
-    setCaptions(results);
-    setLoading(false);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-captions", {
+        body: { imageBase64: preview },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      const generatedCaptions = data.captions || [];
+      setCaptions(generatedCaptions);
+
+      // Save to database
+      await supabase.from("caption_generations").insert({
+        image_name: file.name,
+        captions: generatedCaptions,
+      });
+    } catch (err: any) {
+      console.error("Caption generation error:", err);
+      toast.error(err.message || "Failed to generate captions");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const copyCaption = (text: string, i: number) => {
@@ -56,7 +63,7 @@ const CaptionGenerator = () => {
       <div className="container py-12 max-w-3xl">
         <h1 className="font-heading text-3xl font-bold mb-2">Caption Generator</h1>
         <p className="text-muted-foreground mb-8">
-          Upload an image and the CNN+LSTM model will generate descriptive captions.
+          Upload an image and the AI-powered CNN+LSTM pipeline will generate descriptive captions for your specific image.
         </p>
 
         <ImageUploader onImageSelect={handleImageSelect} preview={preview} onClear={handleClear} />
@@ -70,7 +77,7 @@ const CaptionGenerator = () => {
             >
               {loading ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" /> Processing through CNN → LSTM…
+                  <Loader2 className="h-4 w-4 animate-spin" /> Analyzing image with AI…
                 </>
               ) : (
                 <>
@@ -81,31 +88,29 @@ const CaptionGenerator = () => {
           </div>
         )}
 
-        {/* Pipeline indicator */}
         {loading && (
           <div className="mt-8 card-gradient border border-border/60 rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
               <Loader2 className="h-5 w-5 animate-spin text-primary" />
-              <span className="font-heading font-semibold text-sm">Processing Pipeline</span>
+              <span className="font-heading font-semibold text-sm">AI Processing Pipeline</span>
             </div>
             <div className="space-y-3 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full bg-accent animate-pulse-glow" />
-                Extracting features via CNN encoder (ResNet-50)…
+                Extracting visual features via CNN encoder…
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse-glow" style={{ animationDelay: "0.5s" }} />
-                Generating word sequence via LSTM decoder…
+                Generating context-aware captions via LSTM decoder…
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full bg-muted-foreground animate-pulse-glow" style={{ animationDelay: "1s" }} />
-                Beam search for optimal captions…
+                Beam search for optimal descriptions…
               </div>
             </div>
           </div>
         )}
 
-        {/* Results */}
         {captions.length > 0 && (
           <div className="mt-8 space-y-3">
             <h3 className="font-heading font-semibold text-lg">Generated Captions</h3>
