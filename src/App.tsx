@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import CaptionGenerator from "./pages/CaptionGenerator";
 import Architecture from "./pages/Architecture";
 import DocumentVerify from "./pages/DocumentVerify";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
