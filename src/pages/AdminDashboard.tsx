@@ -89,7 +89,7 @@ const AdminDashboard = () => {
             <p className="text-muted-foreground text-sm mt-1">
               Monitor document verifications, embed usage, and manage statuses
             </p>
-          </div>
+          <div className="flex items-center gap-2">
           <button
             onClick={fetchData}
             disabled={loading}
