@@ -105,6 +105,7 @@ const AdminDashboard = () => {
             <LogOut className="h-4 w-4" />
             Logout
           </button>
+          </div>
         </div>
 
         {/* Stats */}
