@@ -124,16 +124,41 @@ const DocumentVerify = ({ whiteLabel, embedded = false }: Props) => {
       console.error("Failed to save verification:", err);
     }
 
+    // Notify parent window if embedded
+    if (embedded && window.parent !== window) {
+      window.parent.postMessage({
+        type: "DOCVERIFY_RESULT",
+        result: {
+          file_name: file.name,
+          is_document: res.isDocument,
+          category: res.category,
+          confidence: res.confidence,
+          status: res.isDocument ? "pending" : "flagged",
+          details: res.details,
+        },
+      }, "*");
+    }
+
     setLoading(false);
   };
 
   const embedSnippet = `<!-- ${config.brandName} Widget -->
 <iframe
-  src="${window.location.origin}/verify?embed=true"
+  src="${window.location.origin}/embed"
   width="100%" height="700"
   style="border:none;border-radius:12px;"
   title="Document Verification"
-></iframe>`;
+></iframe>
+
+<script>
+  // Listen for verification results
+  window.addEventListener("message", (e) => {
+    if (e.data?.type === "DOCVERIFY_RESULT") {
+      console.log("Verification result:", e.data.result);
+      // Handle the result in your app
+    }
+  });
+</script>`;
 
   return (
     <div className={embedded ? "" : "min-h-screen pt-16"}>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ShieldCheck, FileCheck, AlertTriangle, Ban, RefreshCw, Eye, Globe, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { ShieldCheck, FileCheck, AlertTriangle, Ban, RefreshCw, Eye, Globe, Clock, CheckCircle2, XCircle, LogOut } from "lucide-react";
 
 type Verification = {
   id: string;
@@ -32,10 +33,22 @@ const statusIcons: Record<string, React.ReactNode> = {
 };
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [verifications, setVerifications] = useState<Verification[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, verified: 0, flagged: 0, embed: 0 });
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("admin_auth") !== "true") {
+      navigate("/admin/login", { replace: true });
+    }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("admin_auth");
+    navigate("/admin/login");
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -77,6 +90,7 @@ const AdminDashboard = () => {
               Monitor document verifications, embed usage, and manage statuses
             </p>
           </div>
+          <div className="flex items-center gap-2">
           <button
             onClick={fetchData}
             disabled={loading}
@@ -85,6 +99,14 @@ const AdminDashboard = () => {
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </button>
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium border border-destructive/40 text-destructive hover:bg-destructive/10 transition-colors"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </button>
+          </div>
         </div>
 
         {/* Stats */}
