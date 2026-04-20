@@ -137,7 +137,7 @@ const DocumentVerify = ({ whiteLabel, embedded = false }: Props) => {
           is_document: res.isDocument,
           category: res.category,
           confidence: res.confidence,
-          status: res.isDocument ? "pending" : "flagged",
+          status: autoStatus,
           details: res.details,
         },
       }, "*");
