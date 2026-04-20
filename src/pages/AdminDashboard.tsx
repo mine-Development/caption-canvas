@@ -14,6 +14,7 @@ type Verification = {
   status: string;
   details: string[] | null;
   source: string | null;
+  image_data: string | null;
   created_at: string;
   updated_at: string;
 };
