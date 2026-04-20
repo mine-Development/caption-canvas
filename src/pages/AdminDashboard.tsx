@@ -170,19 +170,45 @@ const AdminDashboard = () => {
             <h2 className="font-heading font-semibold mb-4">Details</h2>
             {selected ? (
               <div className="space-y-4">
+                {selected.image_data && (
+                  <div className="rounded-lg overflow-hidden border border-border/40 bg-secondary/20">
+                    <img
+                      src={selected.image_data}
+                      alt={selected.file_name}
+                      className="w-full max-h-56 object-contain"
+                    />
+                  </div>
+                )}
+
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">{selected.category_icon || "🚫"}</span>
                   <div>
                     <p className="font-heading font-bold">{selected.category || "Unrecognized"}</p>
                     <p className="text-xs text-muted-foreground">
-                      Confidence: {selected.confidence}%
+                      Confidence: {selected.confidence ?? 0}%
                     </p>
+                  </div>
+                </div>
+
+                {/* Confidence bar */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-xs text-muted-foreground">Confidence Score</p>
+                    <p className="text-xs font-semibold">{selected.confidence ?? 0}%</p>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-1000 ${
+                        selected.is_document ? "bg-accent" : "bg-destructive"
+                      }`}
+                      style={{ width: `${selected.confidence ?? 0}%` }}
+                    />
                   </div>
                 </div>
 
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">File</p>
-                  <p className="text-sm">{selected.file_name}</p>
+                  <p className="text-sm break-all">{selected.file_name}</p>
                 </div>
 
                 <div>
