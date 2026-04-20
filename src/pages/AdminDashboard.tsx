@@ -152,7 +152,7 @@ const AdminDashboard = () => {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{v.file_name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {v.category || "Unrecognized"} • {v.source || "direct"}
+                        {v.category || "Unrecognized"} • {v.source || "direct"} • {v.confidence ?? 0}%
                       </p>
                     </div>
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${statusColors[v.status]}`}>
