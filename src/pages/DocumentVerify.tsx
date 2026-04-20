@@ -107,7 +107,10 @@ const DocumentVerify = ({ whiteLabel, embedded = false }: Props) => {
     const res = classifyDocument(file.name, file.type);
     setResult(res);
 
-    // Save to database
+    // Auto-determine status based on result
+    const autoStatus = res.isDocument ? "verified" : "flagged";
+
+    // Save to database (include image preview when available)
     try {
       await supabase.from("document_verifications").insert({
         file_name: file.name,
@@ -116,9 +119,10 @@ const DocumentVerify = ({ whiteLabel, embedded = false }: Props) => {
         category: res.category,
         category_icon: res.categoryIcon,
         confidence: res.confidence,
-        status: res.isDocument ? "pending" : "flagged",
+        status: autoStatus,
         details: res.details,
         source: embedded ? "embed" : "direct",
+        image_data: preview,
       });
     } catch (err) {
       console.error("Failed to save verification:", err);
@@ -133,7 +137,7 @@ const DocumentVerify = ({ whiteLabel, embedded = false }: Props) => {
           is_document: res.isDocument,
           category: res.category,
           confidence: res.confidence,
-          status: res.isDocument ? "pending" : "flagged",
+          status: autoStatus,
           details: res.details,
         },
       }, "*");

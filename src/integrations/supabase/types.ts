@@ -45,6 +45,7 @@ export type Database = {
           file_name: string
           file_type: string
           id: string
+          image_data: string | null
           ip_address: string | null
           is_document: boolean
           source: string | null
@@ -60,6 +61,7 @@ export type Database = {
           file_name: string
           file_type: string
           id?: string
+          image_data?: string | null
           ip_address?: string | null
           is_document?: boolean
           source?: string | null
@@ -75,6 +77,7 @@ export type Database = {
           file_name?: string
           file_type?: string
           id?: string
+          image_data?: string | null
           ip_address?: string | null
           is_document?: boolean
           source?: string | null
